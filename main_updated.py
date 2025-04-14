@@ -286,20 +286,32 @@ class HorizontalTop8Bracket(tk.Tk):
             match = self.winners[round_name][match_index]
         else:
             match = self.losers[round_name][match_index]
+
+        # 🚫 Prevent setting the winner again
+        if match.get("winner") is not None:
+            messagebox.showinfo("Already Set", "This match already has a winner.")
+            return
+
         if not match["p1"] or not match["p2"]:
             messagebox.showerror("Error", "Match is not ready or incomplete!")
             return
+
         winner = match["p1"] if winner_index == 0 else match["p2"]
         loser = match["p2"] if winner_index == 0 else match["p1"]
+
         if match["score1"] is None and match["score2"] is None:
             if winner_index == 0:
-                match["score1"] = 2; match["score2"] = 0
+                match["score1"] = 2
+                match["score2"] = 0
             else:
-                match["score1"] = 0; match["score2"] = 2
+                match["score1"] = 0
+                match["score2"] = 2
+
         if bracket_type == "winners":
             self.advance_in_winners(round_name, match_index, winner, loser, winner_index)
         else:
             self.advance_in_losers(round_name, match_index, winner, loser)
+
         match["winner"] = winner
         self.update_ui()
         self.update_match_files(match, bracket_type, round_name, match_index)
